@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, VecDeque};
+use crate::domain::order::{Order, Side};
 
 pub type Price = i64;
 pub type Quantity = i64;
@@ -25,8 +26,10 @@ impl OrderBook {
             Side::Sell => &mut self.asks,
         };
 
+        let price = order.price.expect("Limit orders must have a price");
+
         book_side.
-            entry(order.price)
+            entry(price)
             .or_insert_with(VecDeque::new)
             .push_back(order);
     }
@@ -45,7 +48,7 @@ impl OrderBook {
             .and_then(|(_,queue)| queue.front())
     }
 
-    pub fn pop_best_bid(&mut self) -> Option(Order) {
+    pub fn pop_best_bid(&mut self) -> Option<Order> {
         let price = self.best_bid_price()?;
         let queue = self.bids.get_mut(&price)?;
         let order = queue.pop_front();

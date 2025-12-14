@@ -107,4 +107,39 @@ impl OrderBook {
             }
         }
     }
+
+    pub fn remove_order(
+        &mut self,
+        side: Side,
+        price: Price,
+        order_id: u64,
+    ) -> bool {
+        let book_side = match side {
+            Side::Buy => &mut self.bids,
+            Side::Sell => &mut self.asks,
+        };
+
+        let mut removed = false;
+        let mut remove_price_level = false;
+
+        {
+            let queue = match book_side.get_mut(&price) {
+                Some(q) => q,
+                None => return false,
+            };
+
+            let original_len = queue.len();
+            queue.retain(|order| order.id != order_id);
+
+            removed = original_len != queue.len();
+            remove_price_level = queue.is_empty();
+        }
+
+        if remove_price_level {
+            book_side.remove(&price);
+        }
+
+        removed
+    }
+
 }

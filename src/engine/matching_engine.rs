@@ -100,9 +100,10 @@ impl MatchingEngine {
                 return;
             }
 
-            self.insert_if_remaining(order.clone());
-
         }
+
+        self.insert_if_remaining(order.clone());
+
     }
 
     fn match_sell_order(&mut self, order: &mut Order, events: &mut Vec<EngineEvent>) {
@@ -118,8 +119,7 @@ impl MatchingEngine {
                     if best_bid_price < limit_price {
                         break;
                     }
-            }
-
+                }
             }
 
             // Get resting BUY order
@@ -137,6 +137,7 @@ impl MatchingEngine {
                 buy_order_id: resting.id,
                 sell_order_id: order.id,
             }));
+
 
             // Update quantities
             order.quantity -= traded_qty;
